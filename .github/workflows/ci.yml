@@ -21,4 +21,6 @@ jobs:
           distribution: 'temurin'
 
       - name: Build and run tests with Maven
-        run: mvn clean test
+        run: |
+          cd cryptowallet
+          mvn clean test
