@@ -20,7 +20,12 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Build and run tests with Maven
+      - name: Create config.properties file
+        working-directory: cryptowallet
         run: |
-          cd cryptowallet
-          mvn clean test
+          echo "COINDESK_KEY=${{ secrets.COINDESK_KEY }}" > config.properties
+          echo "INFURAID=${{ secrets.INFURAID }}" >> config.properties
+
+      - name: Build and run tests with Maven
+        working-directory: cryptowallet
+        run: mvn clean test

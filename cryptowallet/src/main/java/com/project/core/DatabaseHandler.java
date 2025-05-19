@@ -254,7 +254,6 @@ public class DatabaseHandler {
 
     /* Returns an ArrayList of String arrays representing all available consultants and their IDs. */
     public ArrayList<String[]> getAvailableConsultants() {
-        UserHandler uh = UserHandler.getInstance();
         ArrayList<String[]> consultants = new ArrayList<>();
 
         try (
