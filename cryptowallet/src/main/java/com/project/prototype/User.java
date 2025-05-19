@@ -1,5 +1,5 @@
 package com.project.prototype;
-import com.project.core.*;
+import com.project.core.UserHandler;
 
 // User class representing all users of our system.
 public class User {

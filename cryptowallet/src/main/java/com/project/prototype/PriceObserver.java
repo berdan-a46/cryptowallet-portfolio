@@ -20,6 +20,7 @@ public class PriceObserver implements Observer {
 
 	// Retrieves all alerts from a customer iterating over them.
 	// If any alerts match the cryptocurrency and the alert's price level, the alertHit method is called.
+	//Note: Full implementation will be completed once Customer.getAlerts() is defined in a future integration.	public void checkForPriceAlert(Observable o) {
 	public void checkForPriceAlert(Observable o) {
 		//Get all the alerts from a customer
 		ArrayList<CoinPriceAlert> alerts = null; // = Customer.getAlerts();

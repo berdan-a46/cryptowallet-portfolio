@@ -18,6 +18,8 @@ import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.Calendar;
 import com.project.prototype.*;
+import java.io.FileInputStream;
+import java.util.Properties;
 
 import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.core.PeerGroup;
@@ -49,6 +51,13 @@ public class Controller {
     private DatabaseHandler dh = DatabaseHandler.getInstance();
     private UserHandler uh = UserHandler.getInstance();
     private Customer customer = dh.createCustomer(uh.getLocalID());
+
+    private String getInfuraID() throws IOException {
+		Properties prop = new Properties();
+		FileInputStream input = new FileInputStream("config.properties");
+		prop.load(input);
+		return prop.getProperty("INFURAID");
+	}
 
     // Validates the customer's login attempt using a PIN and creates a new customer object.
     @PostMapping(path = "/customerPin/")
@@ -83,10 +92,8 @@ public class Controller {
     @PostMapping(path = "/cancelBooking/")
     public ResponseEntity<String> cancelBooking(@RequestBody int sessionID) throws ParseException {        
         boolean response = dh.cancelConsultancySession(sessionID, customer);
-
         return new ResponseEntity<>(Boolean.toString(response), HttpStatus.OK);
     }
-
 
     // Returns a list of booked sessions for the customer.
     @GetMapping(path ="/viewBookedSessions")
@@ -163,7 +170,7 @@ public class Controller {
 
         try {
             Credentials credentials = Credentials.create(cryptocurrency.getPrivateKey());
-            Web3j web3j = Web3j.build(new HttpService("https://mainnet.infura.io/v3/infuraID"));
+            Web3j web3j = Web3j.build(new HttpService("https://mainnet.infura.io/v3/" + getInfuraID()));
 
             EthGetTransactionCount ethGetTransactionCount = web3j.ethGetTransactionCount(senderPublicAddr, DefaultBlockParameterName.LATEST).send();
             BigInteger nonce = ethGetTransactionCount.getTransactionCount();

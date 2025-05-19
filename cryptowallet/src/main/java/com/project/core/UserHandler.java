@@ -3,13 +3,12 @@ package com.project.core;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import com.project.prototype.*;
 
 // A singleton class that provides user authentication and database access functionality.
 public class UserHandler {
     
     private static UserHandler instance = null;
-    DatabaseHandler db = DatabaseHandler.getInstance();
+    DatabaseHandler dh = DatabaseHandler.getInstance();
 
     private UserHandler() {
     }
@@ -24,7 +23,7 @@ public class UserHandler {
 
     // Validates a customer's password.
     public boolean validateCustomerPassword(int customerID, String customerPass) {
-        if (db.checkCustomerPassword(customerID, customerPass)) {
+        if (dh.checkCustomerPassword(customerID, customerPass)) {
             System.out.println("test: Customer Password Validated");
             return true;
         } else {
@@ -35,9 +34,6 @@ public class UserHandler {
 
     // Validates a customer's PIN login attempt.
     public boolean validatePinLoginAttempt(String pin) {
-        System.out.println("Pin value: " + pin);
-
-        DatabaseHandler dh = DatabaseHandler.getInstance();
         if (dh.checkCustomerPin(getLocalID(), pin)) {
             System.out.println("Pin login success.");
             return true;

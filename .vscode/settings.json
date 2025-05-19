@@ -2,6 +2,7 @@
     "java.configuration.updateBuildConfiguration": "interactive",
     "files.exclude": {
         "**/.git": false
-    }
+    },
+    "java.compile.nullAnalysis.mode": "automatic"
     
 }

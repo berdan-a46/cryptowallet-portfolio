@@ -78,7 +78,6 @@ public class DatabaseHandler {
        It returns a boolean value indicating whether the PIN is valid or not.
     */
     public boolean checkCustomerPin(int customerID, String pin) {
-        
         try (
             Connection connection = DriverManager.getConnection(getDbUrl(), getUser(), getPassword()); 
             Statement statement = connection.createStatement();
@@ -109,9 +108,6 @@ public class DatabaseHandler {
     */
     public Customer createCustomer(int customerLocalID)
     {
-    //Go through the customer table. Get their pin, password and their wallet id
-    //with wallet ID get call create wallet. Make customer with these parameters
-        UserHandler uh = UserHandler.getInstance();
         try (
             Connection connection = DriverManager.getConnection(getDbUrl(), getUser(), getPassword()); 
             Statement statement = connection.createStatement();
@@ -131,7 +127,7 @@ public class DatabaseHandler {
             System.out.println("Connection Failed. Customer not created.");
             System.out.println(except.getMessage());
         }
-        return new Customer(customerLocalID, "1", "sd", new Wallet("yes", (float) 100.2, new ArrayList<>(), new ArrayList<>()),new ArrayList<>());
+        return null;
     }
      
     /* The createWallet method takes in a wallet ID and retrieves the wallet's balance, seed, and transaction 

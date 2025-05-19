@@ -8,6 +8,10 @@ import java.net.URL;
 import org.json.JSONObject;
 
 import java.util.Observable;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Properties;
+
 
 // Note: this class is not being utilised fully and will be implemented in the second version of our prototype (post-presentation).
 // The Cryptocurrency class represents a type of digital currency, which can be observed by other classes.
@@ -31,22 +35,29 @@ public class Cryptocurrency extends Observable {
 		this.balance = balance;
 	}
 
+	private String getCoinDeskKey() throws IOException {
+		Properties prop = new Properties();
+		FileInputStream input = new FileInputStream("config.properties");
+		prop.load(input);
+		return prop.getProperty("COINDESK_KEY");
+	}
+
 	/* At this time, the getCurrentCryptoPrice function is not in use.
 	   This is a feature that will be implemented in the future, as soon as the system involves real-time price fetching 
 	   and integration with the project being fully developed at a later stage.
 	   Right now, the main emphasis is on creating the core framework and managing the data simulation.
 	*/
-    private double getCurrentCryptoPrice(String crypto) {
+    public double getCurrentCryptoPrice(String crypto) {
         try {
             // Set the url depending on which crypto is passed in as a parameter
             String urlString = "";
             String abbreviation = "";
             if (crypto.equals("bitcoin")){
-                urlString = "https://data-api.coindesk.com/spot/v1/latest/tick?market=coinbase&instruments=BTC-GBP&api_key=x";
+                urlString = "https://data-api.coindesk.com/spot/v1/latest/tick?market=coinbase&instruments=BTC-GBP&api_key=" + getCoinDeskKey();
                 abbreviation = "BTC";
             }
             else if (crypto.equals("ethereum")){
-                urlString = "https://data-api.coindesk.com/spot/v1/latest/tick?market=coinbase&instruments=ETH-GBP&api_key=x";
+                urlString = "https://data-api.coindesk.com/spot/v1/latest/tick?market=coinbase&instruments=ETH-GBP&api_key=" + getCoinDeskKey();
                 abbreviation = "ETH";
             }
             URL url = URI.create(urlString).toURL();
