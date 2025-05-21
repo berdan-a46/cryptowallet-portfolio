@@ -52,6 +52,10 @@ public class Controller {
     private UserHandler uh = UserHandler.getInstance();
     private Customer customer = dh.createCustomer(uh.getLocalID());
 
+    /* Gets the infura ID from config.properties
+     * config.properties is generated at runtime by CI pipelin
+     * Keys are stored in Github Secrets
+     */
     private String getInfuraID() throws IOException {
 		Properties prop = new Properties();
 		FileInputStream input = new FileInputStream("config.properties");
@@ -124,16 +128,25 @@ public class Controller {
         for(Cryptocurrency cryptocurrency : cryptocurrencies){
             if(cryptocurrency.getName().equals("Bitcoin")){
                 try {
+                    // Set Network Parameters, Wallet with key, and address
                     NetworkParameters params = MainNetParams.get();
+
                     DumpedPrivateKey dumpedPrivateKey = DumpedPrivateKey.fromBase58(params, cryptocurrency.getPrivateKey());
                     ECKey ecKey = dumpedPrivateKey.getKey();
                     org.bitcoinj.wallet.Wallet bitcoinWallet = new org.bitcoinj.wallet.Wallet(params);
                     bitcoinWallet.importKey(ecKey);
+
                     Address recipient = Address.fromBase58(params, receiverPublicAddr);
+
+                    //Create a transaction request to send the specified amount of BTC
                     SendRequest req = SendRequest.to(recipient, Coin.valueOf((long) (amount * 1e8)));
+
+                    // Finalise the transaction 
                     bitcoinWallet.completeTx(req);
                     org.bitcoinj.core.Transaction btcTransaction = req.tx;
                     System.out.println("Transaction hash: " + btcTransaction.getHashAsString());
+
+                    // Connect to the Bitcoin network and send the transaction so it can be confirmed
                     PeerGroup peerGroup = new PeerGroup(params, new BlockChain(params, bitcoinWallet, new MemoryBlockStore(params)));
                     peerGroup.start();
                     peerGroup.addWallet(bitcoinWallet);
@@ -156,35 +169,44 @@ public class Controller {
         Wallet wallet = customer.getWallet();
         ArrayList<Cryptocurrency> cryptosInWallet = wallet.getCryptocurrencies();
         Cryptocurrency cryptocurrency = null;
-
+        
+        //Attempt to find ethereum from user's wallet
         for (Cryptocurrency cr : cryptosInWallet) {
             if (cr.getName().equalsIgnoreCase("eth")) {
                 cryptocurrency = cr;
                 break;
             }
         }
-
         if (cryptocurrency == null) {
             return new ResponseEntity<>("Ethereum wallet not found", HttpStatus.BAD_REQUEST);
         }
-
         try {
             Credentials credentials = Credentials.create(cryptocurrency.getPrivateKey());
+
+            //Set up Web3j client
             Web3j web3j = Web3j.build(new HttpService("https://mainnet.infura.io/v3/" + getInfuraID()));
 
+            // Get the number of transactions sent from the sender's address
             EthGetTransactionCount ethGetTransactionCount = web3j.ethGetTransactionCount(senderPublicAddr, DefaultBlockParameterName.LATEST).send();
-            BigInteger nonce = ethGetTransactionCount.getTransactionCount();
+
+            BigInteger nonce = ethGetTransactionCount.getTransactionCount(); //Nonce used for transaction
+
+            //Define gas price and gas limit 
             BigInteger gasPrice = BigInteger.valueOf(20_000_000_000L);
             BigInteger gasLimit = BigInteger.valueOf(21_000);
 
+            //Create raw ethereum transaction object
             BigInteger value = Convert.toWei(BigDecimal.valueOf(amount), Convert.Unit.ETHER).toBigInteger();
             RawTransaction rawTransaction = RawTransaction.createEtherTransaction(nonce, gasPrice, gasLimit, receiverPublicAddr, value);
 
+            //Sign transaction and convert it to hex format
             byte[] signedMessage = TransactionEncoder.signMessage(rawTransaction, credentials);
             String hexValue = Numeric.toHexString(signedMessage);
 
+            //Send signed transaction to the Ethereum Network
             EthSendTransaction ethSendTransaction = web3j.ethSendRawTransaction(hexValue).sendAsync().get();
 
+            //Return the transaction hash if successful, otherwise return error
             if (ethSendTransaction.getTransactionHash() != null) {
                 String txHash = ethSendTransaction.getTransactionHash();
                 return new ResponseEntity<>(txHash, HttpStatus.OK);
@@ -216,8 +238,9 @@ public class Controller {
             {
                 return new ResponseEntity<>("Can't afford", HttpStatus.BAD_REQUEST);
             }
-        //iterate through for loop of cryptos customer has
-        //get the one that matches the crypto of the transaction
+        
+        //Iterate through for loop of cryptos customer has in their wallet
+        //Get the one that matches the crypto of the transaction
         Cryptocurrency cryptocurrency = null;
         for (Cryptocurrency cr : customer.getWallet().getCryptocurrencies())
         {
@@ -229,7 +252,7 @@ public class Controller {
         if (cryptocurrency == null) {
             return new ResponseEntity<>("Cryptocurrency not found", HttpStatus.NOT_FOUND);
         }
-        
+    
         if (dh.createTransaction(transaction)) {
             transaction.setTransactionID(dh.getTransactionId(transaction));
             customer.getWallet().addTransaction(transaction);
