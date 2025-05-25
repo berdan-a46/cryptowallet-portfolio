@@ -4,7 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
-// A singleton class that provides user authentication and database access functionality.
+// A singleton class that provides user authentication and database access functionality
 public class UserHandler {
     
     private static UserHandler instance = null;
@@ -13,7 +13,7 @@ public class UserHandler {
     private UserHandler() {
     }
 
-    // Returns an instance of the UserHandler class.
+    // Returns an instance of the UserHandler class
     public static UserHandler getInstance() {
         if (instance == null) {
             instance = new UserHandler();
@@ -21,7 +21,7 @@ public class UserHandler {
         return instance;
     }
 
-    // Validates a customer's password.
+    // Validates a customer's password
     public boolean validateCustomerPassword(int customerID, String customerPass) {
         if (dh.checkCustomerPassword(customerID, customerPass)) {
             System.out.println("test: Customer Password Validated");
@@ -32,7 +32,7 @@ public class UserHandler {
         }
     }
 
-    // Validates a customer's PIN login attempt.
+    // Validates a customer's PIN login attempt
     public boolean validatePinLoginAttempt(String pin) {
         if (dh.checkCustomerPin(getLocalID(), pin)) {
             System.out.println("Pin login success.");
@@ -43,9 +43,8 @@ public class UserHandler {
         }
     }
 
-    /* Returns the customer ID stored in a local file for this prototype.
-       Future integrations will obviously not have customer ID in a local file.
-    */
+    // Returns the customer ID stored in a local file for this prototype.
+    // Future integrations will not have customer ID in a local file and be managed through secure authentication.
     public int getLocalID() {
 
         String fileName = "";

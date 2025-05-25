@@ -24,17 +24,17 @@ public class Customer extends User {
 		this.sessions = sessions;
 	}
 
-	// returns the customer's ID.
+	// Returns the customer's ID
 	public int getCustomerID() {
 		return this.getUserID();
 	}
 
-	// books a consultancy session for the customer.
+	// Books a consultancy session for the customer
 	public void bookConsultancySession(ConsultancySession cs) {
 		sessions.add(cs);
 	}
 
-	// cancels a consultancy session for the customer.
+	// Cancels a consultancy session for the customer
 	public void cancelConsultancySession(int sessionID) {
 		for (int i=0; i<sessions.size(); i++) {
 			if (sessions.get(i).getsessionID() == sessionID) {
@@ -44,7 +44,7 @@ public class Customer extends User {
 		}
 	}
 
-	// signs up the customer to a paid subscription.
+	// Signs up the customer to a paid subscription
 	public void signUpToPaid() {
 		if (subscriptionType.getSubscriptionName().equals("Free")) {
 			System.out.println("You want to upgrade to our Paid subscription.");
@@ -63,65 +63,65 @@ public class Customer extends User {
 		}
 	}
 
-	// creates a coin price alert for the customer.
+	// Creates a coin price alert for the customer
 	public void createAlert(float level, Cryptocurrency crypto) {
 		// TODO - implement Customer.createAlert
 		throw new UnsupportedOperationException();
 	}
 
-	// cancels a coin price alert for the customer.
+	// Cancels a coin price alert for the customer
 	public void cancelAlert(CoinPriceAlert alert) {
 		alerts.remove(alert);
 	}
 
-	// changes the customer's password to a new one.
+	// Changes the customer's password to a new one
 	public void changePassword(String newPassword) {
 	// TODO - implement Customer.changePassword
 	throw new UnsupportedOperationException();
 	}
 	
-	// returns the customer's wallet object.
+	// Returns the customer's wallet object
 	public Wallet getWallet() {
 	return this.wallet;
 	}
 	
-	// returns the list of coin price alerts for the customer.
+	// Returns the list of coin price alerts for the customer
 	public ArrayList<CoinPriceAlert> getAlerts() {
 	return this.alerts;
 	}
 	
-	// Returns the customer's PIN.
+	// Returns the customer's PIN
 	public String getPin() {
 	return this.pin;
 	}
 
-	// returns the customer's password.
+	// Returns the customer's password
 	public String getPassword() {
 	return this.password;
 	}
 	
-	// returns the customer's subscription type.
+	// Returns the customer's subscription type
 	public Subscription getSubscription() {
 	return subscriptionType;
 	}
 	
-	// returns the list of private keys for the customer.
+	// Returns the list of private keys for the customer
 	public ArrayList<String> getPrivateKeys(String password) {
 	// TODO - implement Customer.getPrivateKeys
 	throw new UnsupportedOperationException();
 	}
 	
-	// sets the customer's PIN.
+	// Sets the customer's PIN
 	public void setPin(String pin) {
 	this.pin = pin;
 	}
 	
-	// sets the customer's password.
+	// Sets the customer's password
 	public void setPassword(String password) {
 	this.password = password;
 	}
 	
-	// returns the list of consultancy sessions for the customer.
+	// Returns the list of consultancy sessions for the customer
 	public ArrayList<ConsultancySession> getConsultancySessions() {
 	return sessions;
 	}

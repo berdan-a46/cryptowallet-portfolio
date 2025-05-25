@@ -15,7 +15,7 @@ import com.project.prototype.*;
    The class has private fields that are accessed by getters for additional class security. 
 */
 public class DatabaseHandler {
-    //private fields accessed by getters for additional class security
+    // Private fields accessed by getters for additional class security
     private static DatabaseHandler instance = null;
     private static final String dbUrl = "jdbc:mysql://localhost/wallet";
     private static final String user = "root";
@@ -157,7 +157,7 @@ public class DatabaseHandler {
                 }
                 ArrayList<Cryptocurrency> cryptos = new ArrayList<>();
                 ArrayList<Transaction> transactions = new ArrayList<>();
-                //Iterate through cryptoResults and process results into wallet
+                // Iterate through cryptoResults and process results into wallet
                 while (cryptoResults.next())
                 {
                     String name = cryptoResults.getString("cryptoName");
@@ -166,7 +166,7 @@ public class DatabaseHandler {
                     float cryptoBalance = (float) cryptoResults.getDouble("balance");
                     cryptos.add(new Cryptocurrency(name, pubA, privateK,cryptoBalance));
                 }
-                //Iterate through transactionResults and process results into transaction
+                // Iterate through transactionResults and process results into transaction
                 while (transactionResults.next())
                 {
                     int tID = transactionResults.getInt("tID");

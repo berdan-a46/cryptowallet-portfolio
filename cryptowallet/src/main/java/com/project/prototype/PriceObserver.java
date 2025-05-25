@@ -3,9 +3,9 @@ package com.project.prototype;
 import java.util.*;
 import com.project.core.*;
 
-// Note: This class is not being utilised fully and will be implemented in the second version of our prototype (post-presentation).
-
-// PriceObserver class to observe the prices of supported cryptocurrencies.
+/* Note: This class is not being utilised fully and will be implemented in the second version of our prototype (post-presentation).
+   PriceObserver class to observe the prices of supported cryptocurrencies.
+*/ 
 public class PriceObserver implements Observer {
 
 	// Sets a fixed value for the new price of a cryptocurrency and updates the price of the object with this value.
@@ -18,11 +18,12 @@ public class PriceObserver implements Observer {
 		checkForPriceAlert(o);
     }
 
-	// Retrieves all alerts from a customer iterating over them.
-	// If any alerts match the cryptocurrency and the alert's price level, the alertHit method is called.
-	//Note: Full implementation will be completed once Customer.getAlerts() is defined in a future integration.	public void checkForPriceAlert(Observable o) {
+	/** Retrieves all alerts from a customer iterating over them.
+	    If any alerts match the cryptocurrency and the alert's price level, the alertHit method is called.
+	    Note: Full implementation will be completed once Customer.getAlerts() is defined in a future integration.	public void checkForPriceAlert(Observable o) {
+	*/
 	public void checkForPriceAlert(Observable o) {
-		//Get all the alerts from a customer
+		// Get all the alerts from a customer
 		ArrayList<CoinPriceAlert> alerts = null; // = Customer.getAlerts();
 
 		Cryptocurrency temporary =  (Cryptocurrency) o;

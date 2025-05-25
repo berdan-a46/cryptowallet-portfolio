@@ -53,8 +53,8 @@ public class Controller {
     private Customer customer = dh.createCustomer(uh.getLocalID());
 
     /* Gets the infura ID from config.properties
-     * config.properties is generated at runtime by CI pipelin
-     * Keys are stored in Github Secrets
+       config.properties is generated at runtime by CI pipelin
+       Keys are stored in Github Secrets
      */
     private String getInfuraID() throws IOException {
 		Properties prop = new Properties();
@@ -63,7 +63,7 @@ public class Controller {
 		return prop.getProperty("INFURAID");
 	}
 
-    // Validates the customer's login attempt using a PIN and creates a new customer object.
+    // Validates the customer's login attempt using a PIN and creates a new customer object
     @PostMapping(path = "/customerPin/")
     public ResponseEntity<String> postPin(@RequestBody String pin) {
         boolean validation = uh.validatePinLoginAttempt(pin);
@@ -73,7 +73,7 @@ public class Controller {
         return new ResponseEntity<>(Boolean.toString(validation), HttpStatus.OK);
     }
     
-    // Creates a new consultancy session object and adds it to the customer's session list.
+    // Creates a new consultancy session object and adds it to the customer's session list
     @PostMapping(path = "/createBooking/")
     public ResponseEntity<String> createBooking(@RequestBody String[] sessionDetails) throws ParseException {
         int consultantID = Integer.parseInt(sessionDetails[0]);
@@ -84,7 +84,7 @@ public class Controller {
         Calendar sessionDateTime = Calendar.getInstance();
         bookingTimeStamp.setTime(new Date());
         sessionDateTime.setTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(sessionDetails[2]));
-        String meetingURL = "https://meet.google.com/nnv-vxch-ddz"; //Change in future integrations
+        String meetingURL = "https://meet.google.com/nnv-vxch-ddz"; // Change in future integrations
 
         ConsultancySession cs = new ConsultancySession(consultantID, consultantName, customerID, bookingTimeStamp, sessionDateTime, meetingURL);
         boolean response = dh.createConsultancySession(cs, customer);
@@ -92,14 +92,14 @@ public class Controller {
         return new ResponseEntity<>(Boolean.toString(response), HttpStatus.OK);
     }
 
-    // Cancels a consultancy session object and removes it from the customer's session list.
+    // Cancels a consultancy session object and removes it from the customer's session list
     @PostMapping(path = "/cancelBooking/")
     public ResponseEntity<String> cancelBooking(@RequestBody int sessionID) throws ParseException {        
         boolean response = dh.cancelConsultancySession(sessionID, customer);
         return new ResponseEntity<>(Boolean.toString(response), HttpStatus.OK);
     }
 
-    // Returns a list of booked sessions for the customer.
+    // Returns a list of booked sessions for the customer
     @GetMapping(path ="/viewBookedSessions")
     public ResponseEntity<ArrayList<String[]>> getBookedSessions() {
         ArrayList<String[]> booked = new ArrayList<>();
@@ -119,7 +119,7 @@ public class Controller {
         return new ResponseEntity<>(booked, HttpStatus.OK);
     }
 
-    // Processes a Bitcoin transaction.
+    // Processes a Bitcoin transaction
     @PostMapping(path = "/makeTransactionBTC/")
     public ResponseEntity<String> makeBitcoinTransaction(@RequestBody String[] transactionDetails, @Autowired Wallet wallet) throws ParseException {
         String receiverPublicAddr = transactionDetails[0];
@@ -138,7 +138,7 @@ public class Controller {
 
                     Address recipient = Address.fromBase58(params, receiverPublicAddr);
 
-                    //Create a transaction request to send the specified amount of BTC
+                    // Create a transaction request to send the specified amount of BTC
                     SendRequest req = SendRequest.to(recipient, Coin.valueOf((long) (amount * 1e8)));
 
                     // Finalise the transaction 
@@ -170,7 +170,7 @@ public class Controller {
         ArrayList<Cryptocurrency> cryptosInWallet = wallet.getCryptocurrencies();
         Cryptocurrency cryptocurrency = null;
         
-        //Attempt to find ethereum from user's wallet
+        // Attempt to find ethereum from user's wallet
         for (Cryptocurrency cr : cryptosInWallet) {
             if (cr.getName().equalsIgnoreCase("eth")) {
                 cryptocurrency = cr;
@@ -183,30 +183,30 @@ public class Controller {
         try {
             Credentials credentials = Credentials.create(cryptocurrency.getPrivateKey());
 
-            //Set up Web3j client
+            // Set up Web3j client
             Web3j web3j = Web3j.build(new HttpService("https://mainnet.infura.io/v3/" + getInfuraID()));
 
             // Get the number of transactions sent from the sender's address
             EthGetTransactionCount ethGetTransactionCount = web3j.ethGetTransactionCount(senderPublicAddr, DefaultBlockParameterName.LATEST).send();
 
-            BigInteger nonce = ethGetTransactionCount.getTransactionCount(); //Nonce used for transaction
+            BigInteger nonce = ethGetTransactionCount.getTransactionCount(); // Nonce used for transaction
 
-            //Define gas price and gas limit 
+            // Define gas price and gas limit 
             BigInteger gasPrice = BigInteger.valueOf(20_000_000_000L);
             BigInteger gasLimit = BigInteger.valueOf(21_000);
 
-            //Create raw ethereum transaction object
+            // Create raw ethereum transaction object
             BigInteger value = Convert.toWei(BigDecimal.valueOf(amount), Convert.Unit.ETHER).toBigInteger();
             RawTransaction rawTransaction = RawTransaction.createEtherTransaction(nonce, gasPrice, gasLimit, receiverPublicAddr, value);
 
-            //Sign transaction and convert it to hex format
+            // Sign transaction and convert it to hex format
             byte[] signedMessage = TransactionEncoder.signMessage(rawTransaction, credentials);
             String hexValue = Numeric.toHexString(signedMessage);
 
-            //Send signed transaction to the Ethereum Network
+            // Send signed transaction to the Ethereum Network
             EthSendTransaction ethSendTransaction = web3j.ethSendRawTransaction(hexValue).sendAsync().get();
 
-            //Return the transaction hash if successful, otherwise return error
+            // Return the transaction hash if successful, otherwise return error
             if (ethSendTransaction.getTransactionHash() != null) {
                 String txHash = ethSendTransaction.getTransactionHash();
                 return new ResponseEntity<>(txHash, HttpStatus.OK);
@@ -222,7 +222,7 @@ public class Controller {
     // Processes a cryptocurrency transaction for the customer and store in DB.
     @PostMapping(path = "/makeTransaction/")
     public ResponseEntity<String> makeTransaction(@RequestBody String[] transactionDetails) throws ParseException {
-        int transactionID = 0;  //Just a placeholder. Does get changed later with setTransactionId()
+        int transactionID = 0;  // Just a placeholder. Does get changed later with setTransactionId()
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date date = dateFormat.parse(transactionDetails[0]);
         String crypto = transactionDetails[1];
@@ -239,8 +239,9 @@ public class Controller {
                 return new ResponseEntity<>("Can't afford", HttpStatus.BAD_REQUEST);
             }
         
-        //Iterate through for loop of cryptos customer has in their wallet
-        //Get the one that matches the crypto of the transaction
+        /* Iterate through for loop of cryptos customer has in their wallet
+           Get the one that matches the crypto of the transaction 
+        */
         Cryptocurrency cryptocurrency = null;
         for (Cryptocurrency cr : customer.getWallet().getCryptocurrencies())
         {
@@ -284,7 +285,7 @@ public class Controller {
         return new ResponseEntity<>(transactionDetails, HttpStatus.OK);
     }
 
-    // Retrieves available sessions for the current day and returns them in an ArrayList of String arrays.
+    // Retrieves available sessions for the current day and returns them in an ArrayList of String arrays
     @GetMapping(path = "/viewAvailableSessions")
     public ResponseEntity<ArrayList<String[]>> viewAvailableSessions() {
         ArrayList<String[]> available = new ArrayList<>();
@@ -316,8 +317,9 @@ public class Controller {
         }
     }
 
-    // Retrieves and returns various details about the customer's wallet, 
-    // including total balance and details for each cryptocurrency.
+    /* Retrieves and returns various details about the customer's wallet, 
+       including total balance and details for each cryptocurrency.
+     */ 
     @GetMapping(path = "/walletDetails")
     public ResponseEntity<HashMap<String, String[]>> getWalletDetails()
     {
